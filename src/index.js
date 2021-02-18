@@ -30,14 +30,34 @@ function weixinNotify(key, logDesc, logDesp) {
   return axios.default.post(`https://sc.ftqq.com/${key}.send`, dataStr).then(res => res.data);
 }
 
+function formatDate(date, fmt) {
+  const o = {
+    'y+': date.getFullYear(), // 年份
+    'M+': date.getMonth() + 1, // 月份
+    'd+': date.getDate(), // 日
+    'h+': date.getHours() % 12 === 0 ? 12 : date.getHours() % 12, // 12小时制
+    'H+': date.getHours(), // 24小时制
+    'm+': date.getMinutes(), // 分
+    's+': date.getSeconds(), // 秒
+    'q+': Math.floor((date.getMonth() + 3) / 3), // 季度
+    'f+': date.getMilliseconds(), // 毫秒
+  };
+  for (const k in o) {
+    if (new RegExp('(' + k + ')').test(fmt)) {
+      fmt = fmt.replace(RegExp.$1, o[k].toString().padStart(RegExp.$1.length, '0'));
+    }
+  }
+  return fmt;
+}
+
 async function run(wantToBuyProductNameRegex = /Surface Go/, sizeRegex = /128GB/) {
-  console.log(`wantToBuyProductNameRegex : `, wantToBuyProductNameRegex);
-  console.log(`sizeRegex : `, sizeRegex);
   while (true) {
     try {
-      if (new Date().getMinutes() === 59) {
+      const dateNow = new Date();
+      if (dateNow.getMinutes() === 59) {
         break;
       }
+      console.group(formatDate(dateNow, 'yyyy/MM/dd HH:mm:ss fff : '));
       const result = await get(
         `https://www.microsoftstore.com.cn/graphql?query=%7B+categoryList(filters%3A+%7Bids%3A+%7Bin%3A+%5B%2267%22%5D%7D%7D)+%7B+id+name+absolute_path+store+price_sort+products(pageSize%3A100)+%7B+total_count+items%7B+id+sku+name+image+%7B+label+url+%7D+private_price+qty_status+super_attribute+%7B+code+label+index+%7D+...+on+ConfigurableProduct+%7B+variants+%7B+attributes+%7B+code+label+value_index+%7D+product+%7B+id+sku+name+sub_name+image+%7B+label+url+%7D+private_price+qty_status+color+size+%7D+%7D+%7D+%7D+%7D+%7D+%7D&_=${Date.now()}`
       );
@@ -78,6 +98,7 @@ async function run(wantToBuyProductNameRegex = /Surface Go/, sizeRegex = /128GB/
       } else {
         break;
       }
+      console.groupEnd();
     } catch (error) {
       console.error(error);
     }
