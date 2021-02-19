@@ -81,7 +81,7 @@ async function run(wantToBuyProductNameRegex = /Surface Go/, sizeRegex = /128GB/
                 canBuyProducts = canBuyProducts.filter(x => sizeRegex.test(x.product.sub_name));
               }
               if (canBuyProducts.length > 0) {
-                let notifyMsg = `${wantToBuyProduct.name} 已到货:\r\n${canBuyProducts.map(x => `${x.product.sub_name} ${x.product.private_price}`).join('\r\n')}`;
+                let notifyMsg = `####  ${wantToBuyProduct.name} 已到货：\r\n\r\n${canBuyProducts.map(x => `> ${x.product.sub_name} ${x.product.private_price}`).join('\r\n\r\n')}`; //`${wantToBuyProduct.name} 已到货:\r\n${canBuyProducts.map(x => `${x.product.sub_name} ${x.product.private_price}`).join('\r\n')}`;
                 console.group('notifyMsg : ');
                 console.log(notifyMsg);
                 console.groupEnd();
