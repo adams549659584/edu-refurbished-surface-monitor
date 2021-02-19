@@ -51,10 +51,11 @@ function formatDate(date, fmt) {
 }
 
 async function run(wantToBuyProductNameRegex = /Surface Go/, sizeRegex = /128GB/) {
+  const startDate = new Date();
   while (true) {
     try {
       const dateNow = new Date();
-      if (dateNow.getMinutes() === 59) {
+      if ((dateNow - startDate) / 1000 / 60 > 75) {
         break;
       }
       console.group(formatDate(dateNow, 'yyyy/MM/dd HH:mm:ss fff : '));
